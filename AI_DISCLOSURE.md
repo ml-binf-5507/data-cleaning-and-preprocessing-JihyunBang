@@ -24,7 +24,7 @@ Do NOT:
 
 **Did you use any AI tools to help with this assignment?**
 
-_____ Yes     _____ No
+_____ Yes     ___X__ No
 
 **If yes, please tell us:**
 
@@ -46,7 +46,7 @@ _____ Yes     _____ No
 
 4. **Can you explain your code?** (Can you walk through what each function does and why you wrote it that way?)
    
-   _____ Yes, I can explain it well
+   ___X__ Yes, I can explain it well
    
    _____ Mostly, but I have some questions
    
