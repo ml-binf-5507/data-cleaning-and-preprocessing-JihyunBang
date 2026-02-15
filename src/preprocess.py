@@ -66,6 +66,10 @@ def remove_duplicates(df: pd.DataFrame, id_cols: List[str]) -> Tuple[pd.DataFram
 # ============================================================================
 
 def detect_feature_types(df: pd.DataFrame, target: str, id_cols: List[str]) -> Tuple[List[str], List[str]]:
+    feature_cols = [c for c in df.columns if c not in id_cols and c != target]
+    cat_cols = [c for c in feature_cols if df[c].dtype == 'str']
+    num_cols = [c for c in feature_cols if df[c].dtype in ['int64', 'float64']]
+    return cat_cols, num_cols
     """
     Identify which columns are categorical vs numeric features.
     
@@ -77,6 +81,7 @@ def detect_feature_types(df: pd.DataFrame, target: str, id_cols: List[str]) -> T
         >>> num
         ['age']
     """
+
     # TODO: Implement feature type detection
     # 1. Get all columns except target and id_cols:
     #    feature_cols = [c for c in df.columns if c not in id_cols and c != target]
@@ -93,6 +98,16 @@ def detect_feature_types(df: pd.DataFrame, target: str, id_cols: List[str]) -> T
 # ============================================================================
 
 def encode_categorical(df: pd.DataFrame, cat_cols: List[str]) -> Tuple[pd.DataFrame, List[str]]:
+    df = df.copy()
+    encoded_column_names = []
+    for col in cat_cols:
+        encoded = pd.get_dummies(df[col], prefix=col, dtype=int)
+        df.drop(col, axis=1, inplace=True)
+        df = pd.concat([df, encoded], axis=1)
+        encoded_column_names.extend(encoded.columns.tolist())
+    return df, encoded_column_names
+
+
     """
     One-hot encode categorical columns.
     
@@ -129,6 +144,17 @@ def encode_categorical(df: pd.DataFrame, cat_cols: List[str]) -> Tuple[pd.DataFr
 # ============================================================================
 
 def scale_numeric(df: pd.DataFrame, num_cols: List[str]) -> Tuple[pd.DataFrame, Dict[str, float], Dict[str, float]]:
+    df = df.copy()
+    means_dict = {}
+    stds_dict = {}
+    for col in num_cols:
+        df[col] = df[col].fillna(df[col].median())
+        mean = df[col].mean()
+        std = df[col].std()
+        df[col] = (df[col]-mean)/std
+        means_dict[col] = mean
+        stds_dict[col] = std
+    return df, means_dict, stds_dict
     """
     Standardize numeric columns (mean=0, std=1).
     
